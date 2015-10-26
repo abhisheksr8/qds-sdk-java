@@ -22,7 +22,10 @@ import com.qubole.qds.sdk.java.api.ClusterHadoopConfigBuilder;
 import com.qubole.qds.sdk.java.api.ClusterPrestoConfigBuilder;
 import com.qubole.qds.sdk.java.api.ClusterSecurityConfigBuilder;
 import com.qubole.qds.sdk.java.api.ClusterSpotInstanceConfigBuilder;
+import com.qubole.qds.sdk.java.api.ClusterStableSpotInstanceConfigBuilder;
+
 import org.codehaus.jackson.node.ObjectNode;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -34,6 +37,7 @@ class ClusterConfigBuilderImpl implements ClusterConfigBuilder
     private final ObjectNode hadoop_settings = QdsClientImpl.getMapper().createObjectNode();
     private final ObjectNode fairscheduler_settings = QdsClientImpl.getMapper().createObjectNode();
     private final ObjectNode spot_instance_settings = QdsClientImpl.getMapper().createObjectNode();
+    private final ObjectNode stable_spot_instance_settings = QdsClientImpl.getMapper().createObjectNode();
     private final ObjectNode ec2_settings = QdsClientImpl.getMapper().createObjectNode();
 
     public ObjectNode getNode()
@@ -226,6 +230,38 @@ class ClusterConfigBuilderImpl implements ClusterConfigBuilder
                     public ClusterConfigBuilder maximum_spot_instance_percentage(int maximum_spot_instance_percentage)
                     {
                         spot_instance_settings.put("maximum_spot_instance_percentage", maximum_spot_instance_percentage);
+                        return ClusterConfigBuilderImpl.this;
+                    }
+                };
+            }
+            
+            @Override
+            public ClusterStableSpotInstanceConfigBuilder stable_spot_instance_settings()
+            {
+                if ( !hadoop_settings.has("stable_spot_instance_settings") )
+                {
+                    hadoop_settings.put("stable_spot_instance_settings", spot_instance_settings);
+                }
+                return new ClusterStableSpotInstanceConfigBuilder()
+                {
+                    @Override
+                    public ClusterConfigBuilder maximum_bid_price_percentage(String maximum_bid_price_percentage)
+                    {
+                        stable_spot_instance_settings.put("maximum_bid_price_percentage", maximum_bid_price_percentage);
+                        return ClusterConfigBuilderImpl.this;
+                    }
+
+                    @Override
+                    public ClusterConfigBuilder timeout_for_request(int timeout_for_request)
+                    {
+                        stable_spot_instance_settings.put("timeout_for_request", timeout_for_request);
+                        return ClusterConfigBuilderImpl.this;
+                    }
+
+                    @Override
+                    public ClusterConfigBuilder allow_fallback(boolean allow_fallback)
+                    {
+                        stable_spot_instance_settings.put("allow_fallback", allow_fallback);
                         return ClusterConfigBuilderImpl.this;
                     }
                 };

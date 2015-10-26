@@ -25,4 +25,5 @@ public interface ClusterHadoopConfigBuilder
     public ClusterConfigBuilder initial_nodes(int initial_nodes);
     public ClusterConfigBuilder custom_config(String custom_config);
     public ClusterSpotInstanceConfigBuilder spot_instance_settings();
+    public ClusterStableSpotInstanceConfigBuilder stable_spot_instance_settings();
 }
